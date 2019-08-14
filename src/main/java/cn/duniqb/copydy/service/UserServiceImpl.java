@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import tk.mybatis.mapper.entity.Example;
+import tk.mybatis.mapper.entity.Example.Criteria;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -18,6 +20,12 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private Sid sid;
 
+    /**
+     * 查询用户是否存在
+     *
+     * @param username
+     * @return
+     */
     @SuppressWarnings("all")
     @Transactional(propagation = Propagation.SUPPORTS)
     @Override
@@ -29,6 +37,11 @@ public class UserServiceImpl implements UserService {
         return result != null;
     }
 
+    /**
+     * 保存用户
+     *
+     * @param user
+     */
     @SuppressWarnings("all")
     @Transactional(propagation = Propagation.REQUIRED)
     @Override
@@ -37,5 +50,25 @@ public class UserServiceImpl implements UserService {
         String userId = sid.nextShort();
         user.setId(userId);
         usersMapper.insert(user);
+    }
+
+    /**
+     * 根据用户名和密码查询登录
+     *
+     * @param username
+     * @param password
+     * @return
+     */
+    @Transactional(propagation = Propagation.SUPPORTS)
+    @Override
+    public Users queryUserForLogin(String username, String password) {
+
+        Example userExample = new Example(Users.class);
+        Criteria criteria = userExample.createCriteria();
+        criteria.andEqualTo("username", username);
+        criteria.andEqualTo("password", password);
+        Users result = usersMapper.selectOneByExample(userExample);
+
+        return result;
     }
 }
