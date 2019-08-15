@@ -18,7 +18,7 @@ public interface UserService {
     /**
      * 用户登录，根据用户名和密码查询用户
      */
-    public Users queryUserForLogin(String username, String password);
+    Users queryUserForLogin(String username, String password);
 
     /**
      * 保存用户
@@ -32,5 +32,13 @@ public interface UserService {
      *
      * @param user
      */
-    public void updateUserInfo(Users user);
+    void updateUserInfo(Users user);
+
+    /**
+     * 查询用户信息
+     *
+     * @param userId
+     * @return
+     */
+    Users queryUserInfo(String userId);
 }

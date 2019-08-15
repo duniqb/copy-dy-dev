@@ -3,12 +3,14 @@ package cn.duniqb.copydy.controller;
 
 import cn.duniqb.copydy.common.utils.JSONResult;
 import cn.duniqb.copydy.model.Users;
+import cn.duniqb.copydy.model.UsersVO;
 import cn.duniqb.copydy.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,7 +43,7 @@ public class UserController extends BasicController {
     @ApiImplicitParam(name = "userId", value = "用户id", required = true,
             dataType = "String", paramType = "query")
     @PostMapping("/uploadFace")
-    public JSONResult logout(String userId, @RequestParam("file") MultipartFile[] files) throws IOException {
+    public JSONResult uploadFace(String userId, @RequestParam("file") MultipartFile[] files) throws IOException {
 
         if (StringUtils.isBlank(userId)) {
             return JSONResult.errorMsg("用户 ID 不能为空");
@@ -103,5 +105,28 @@ public class UserController extends BasicController {
         userService.updateUserInfo(user);
 
         return JSONResult.ok(uploadPathDb);
+    }
+
+    /**
+     * 查询用户信息
+     *
+     * @param userId
+     * @return
+     */
+    @ApiOperation(value = "查询用户信息", notes = "查询用户信息的接口")
+    @ApiImplicitParam(name = "userId", value = "用户id", required = true,
+            dataType = "String", paramType = "query")
+    @PostMapping("/query")
+    public JSONResult query(String userId) {
+        System.out.println(userId);
+        if (StringUtils.isBlank(userId)) {
+            return JSONResult.errorMsg("用户 ID 不能为空");
+        }
+
+        Users userInfo = userService.queryUserInfo(userId);
+        UsersVO userVO = new UsersVO();
+        BeanUtils.copyProperties(userInfo, userVO);
+
+        return JSONResult.ok(userVO);
     }
 }
