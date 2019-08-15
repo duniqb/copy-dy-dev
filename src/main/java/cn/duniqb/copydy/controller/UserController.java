@@ -102,6 +102,6 @@ public class UserController extends BasicController {
         user.setFaceImage(uploadPathDb);
         userService.updateUserInfo(user);
 
-        return JSONResult.ok();
+        return JSONResult.ok(uploadPathDb);
     }
 }
