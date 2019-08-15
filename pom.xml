@@ -169,6 +169,14 @@
             <artifactId>spring-data-redis</artifactId>
             <version>1.8.7.RELEASE</version>
         </dependency>
+
+        <!-- 七牛-->
+        <dependency>
+            <groupId>com.qiniu</groupId>
+            <artifactId>qiniu-java-sdk</artifactId>
+            <version>7.2.11</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
     <build>

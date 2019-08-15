@@ -26,4 +26,11 @@ public interface UserService {
      * @param user
      */
     void saveUser(Users user);
+
+    /**
+     * 更新用户信息
+     *
+     * @param user
+     */
+    public void updateUserInfo(Users user);
 }

@@ -71,4 +71,18 @@ public class UserServiceImpl implements UserService {
 
         return result;
     }
+
+    /**
+     * 用户更新个人信息
+     *
+     * @param user
+     */
+    @Override
+    public void updateUserInfo(Users user) {
+        Example userExample = new Example(Users.class);
+        Criteria criteria = userExample.createCriteria();
+        criteria.andEqualTo("id", user.getId());
+        usersMapper.updateByExampleSelective(user, userExample);
+
+    }
 }
