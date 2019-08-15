@@ -4,21 +4,25 @@ package cn.duniqb.copydy.controller;
 import cn.duniqb.copydy.common.utils.JSONResult;
 import cn.duniqb.copydy.common.utils.MD5Utils;
 import cn.duniqb.copydy.model.Users;
+import cn.duniqb.copydy.model.UsersVO;
 import cn.duniqb.copydy.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.UUID;
 
 /**
  * 登录和注册
  */
 @RestController
 @Api(value = "用户注册登录的接口", tags = {"注册和登录的 controller"})
-public class RegistLoginController {
+public class RegistLoginController extends BasicController {
 
     @Autowired
     private UserService userService;
@@ -56,32 +60,30 @@ public class RegistLoginController {
         // 注册成功后返回给前端用户对象，但把密码去敏
         user.setPassword("");
 
-        return JSONResult.ok(user);
+        // 给用户加入 token 并放入 redis 里，并返回 vo 对象
+        UsersVO usersVO = setUserRedisSessionToken(user);
+
+        // 返回 usersVO 给前端
+        return JSONResult.ok(usersVO);
     }
 
+    /**
+     * 给用户加入 token 并放入 redis 里，并返回 vo 对象
+     *
+     * @param userModel
+     * @return
+     */
+    public UsersVO setUserRedisSessionToken(Users userModel) {
+        // 生成唯一 token 并放入 redis 里
+        String uniqueToken = UUID.randomUUID().toString();
+        redisOperator.set(USER_REDIS_SESSION + ":" + userModel.getId(), uniqueToken, 1000 * 60 * 30);
+        // 把 user 对象加入到 VO
+        UsersVO usersVO = new UsersVO();
+        BeanUtils.copyProperties(userModel, usersVO);
+        usersVO.setUserToken(uniqueToken);
+        return usersVO;
+    }
 
-////		String uniqueToken = UUID.randomUUID().toString();
-////		redis.set(USER_REDIS_SESSION + ":" + user.getId(), uniqueToken, 1000 * 60 * 30);
-////
-////		UsersVO userVO = new UsersVO();
-////		BeanUtils.copyProperties(user, userVO);
-////		userVO.setUserToken(uniqueToken);
-//
-//        UsersVO userVO = setUserRedisSessionToken(user);
-//
-//        return JSONResult.ok(userVO);
-
-
-//    public UsersVO setUserRedisSessionToken(Users userModel) {
-//        String uniqueToken = UUID.randomUUID().toString();
-//        redis.set(USER_REDIS_SESSION + ":" + userModel.getId(), uniqueToken, 1000 * 60 * 30);
-//
-//        UsersVO userVO = new UsersVO();
-//        BeanUtils.copyProperties(userModel, userVO);
-//        userVO.setUserToken(uniqueToken);
-//        return userVO;
-//    }
-//
 
     /**
      * 用户登录
@@ -96,11 +98,11 @@ public class RegistLoginController {
         String username = user.getUsername();
         String password = user.getPassword();
 
-//		Thread.sleep(3000);
+        Thread.sleep(3000);
 
         // 判断用户名和密码必须不为空
         if (StringUtils.isBlank(username) || StringUtils.isBlank(password)) {
-            return JSONResult.ok("用户名或密码不能为空...");
+            return JSONResult.ok("用户名或密码不能为空!");
         }
 
         // 判断用户是否存在
@@ -111,10 +113,10 @@ public class RegistLoginController {
         if (userResult != null) {
             // 密码脱敏
             userResult.setPassword("");
-//            UsersVO userVO = setUserRedisSessionToken(userResult);
-            return JSONResult.ok(userResult);
+            UsersVO userVO = setUserRedisSessionToken(userResult);
+            return JSONResult.ok(userVO);
         } else {
-            return JSONResult.errorMsg("用户名或密码不正确, 请重试...");
+            return JSONResult.errorMsg("用户名或密码不正确, 请重试!");
         }
     }
 //
