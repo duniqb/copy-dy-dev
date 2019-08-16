@@ -1,7 +1,12 @@
 package cn.duniqb.copydy.model;
 
+import org.apache.ibatis.annotations.Mapper;
+import org.springframework.stereotype.Component;
+
 import javax.persistence.*;
 
+@Mapper
+@Component
 public class Bgm {
     @Id
     private String id;

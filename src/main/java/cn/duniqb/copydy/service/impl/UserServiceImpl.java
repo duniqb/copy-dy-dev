@@ -1,8 +1,9 @@
-package cn.duniqb.copydy.service;
+package cn.duniqb.copydy.service.impl;
 
 
 import cn.duniqb.copydy.dao.UsersMapper;
 import cn.duniqb.copydy.model.Users;
+import cn.duniqb.copydy.service.UserService;
 import org.n3r.idworker.Sid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
