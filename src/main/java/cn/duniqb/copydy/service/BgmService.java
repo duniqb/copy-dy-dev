@@ -16,5 +16,12 @@ public interface BgmService {
      */
     List<Bgm> queryBgmList();
 
+    /**
+     * 根据 id 查询 bgm 信息
+     *
+     * @param bgmId
+     * @return
+     */
+    Bgm queryBgmById(String bgmId);
 
 }
