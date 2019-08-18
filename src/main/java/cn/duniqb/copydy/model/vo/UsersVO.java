@@ -1,4 +1,4 @@
-package cn.duniqb.copydy.model;
+package cn.duniqb.copydy.model.vo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 

@@ -3,7 +3,7 @@ package cn.duniqb.copydy.controller;
 
 import cn.duniqb.copydy.common.utils.JSONResult;
 import cn.duniqb.copydy.model.Users;
-import cn.duniqb.copydy.model.UsersVO;
+import cn.duniqb.copydy.model.vo.UsersVO;
 import cn.duniqb.copydy.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -118,7 +118,6 @@ public class UserController extends BasicController {
             dataType = "String", paramType = "query")
     @PostMapping("/query")
     public JSONResult query(String userId) {
-        System.out.println(userId);
         if (StringUtils.isBlank(userId)) {
             return JSONResult.errorMsg("用户 ID 不能为空");
         }

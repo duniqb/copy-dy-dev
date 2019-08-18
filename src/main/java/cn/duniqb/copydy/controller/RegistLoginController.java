@@ -4,7 +4,7 @@ package cn.duniqb.copydy.controller;
 import cn.duniqb.copydy.common.utils.JSONResult;
 import cn.duniqb.copydy.common.utils.MD5Utils;
 import cn.duniqb.copydy.model.Users;
-import cn.duniqb.copydy.model.UsersVO;
+import cn.duniqb.copydy.model.vo.UsersVO;
 import cn.duniqb.copydy.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -84,7 +84,6 @@ public class RegistLoginController extends BasicController {
         usersVO.setUserToken(uniqueToken);
         return usersVO;
     }
-
 
     /**
      * 用户登录

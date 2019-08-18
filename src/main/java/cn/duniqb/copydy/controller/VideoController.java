@@ -5,6 +5,7 @@ import cn.duniqb.copydy.common.VideoStatusEnum;
 import cn.duniqb.copydy.common.utils.FetchVideoCover;
 import cn.duniqb.copydy.common.utils.JSONResult;
 import cn.duniqb.copydy.common.utils.MergeVideoMp3;
+import cn.duniqb.copydy.common.utils.PageResult;
 import cn.duniqb.copydy.model.Bgm;
 import cn.duniqb.copydy.model.Videos;
 import cn.duniqb.copydy.service.BgmService;
@@ -14,6 +15,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -251,4 +253,32 @@ public class VideoController extends BasicController {
         return JSONResult.ok();
     }
 
+    /**
+     * 查询所有视频：分页
+     *
+     * @param video
+     * @param isSaveRecord 1：需要保存，0或空：不需要保存
+     * @param page
+     * @return
+     */
+    @PostMapping(value = "/showAll")
+    public JSONResult showAll(@RequestBody Videos video, Integer isSaveRecord, Integer page) {
+        if (page == null) {
+            page = 1;
+        }
+
+        PageResult result = videoService.getAllVideos(video, isSaveRecord, page, PAGE_SIZE);
+        return JSONResult.ok(result);
+    }
+
+    /**
+     * 热搜记录
+     *
+     * @return
+     */
+    @PostMapping(value = "/hot")
+    public JSONResult hot() {
+
+        return JSONResult.ok(videoService.getHotWords());
+    }
 }
