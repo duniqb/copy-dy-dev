@@ -281,4 +281,37 @@ public class VideoController extends BasicController {
 
         return JSONResult.ok(videoService.getHotWords());
     }
+
+    /**
+     * 用户喜欢视频
+     *
+     * @param userId
+     * @param videoId
+     * @param videoCreaterId
+     * @return
+     */
+    @PostMapping(value = "/userLike")
+    public JSONResult userLike(String userId, String videoId, String videoCreaterId) {
+        System.out.println("用户喜欢视频.");
+        videoService.userLikeVideo(userId, videoId, videoCreaterId);
+
+        return JSONResult.ok();
+    }
+
+    /**
+     * 用户不喜欢视频
+     *
+     * @param userId
+     * @param videoId
+     * @param videoCreaterId
+     * @return
+     */
+    @PostMapping(value = "/userUnlike")
+    public JSONResult userUnlike(String userId, String videoId, String videoCreaterId) {
+        System.out.println("用户不喜欢视频.");
+
+        videoService.userUnLikeVideo(userId, videoId, videoCreaterId);
+
+        return JSONResult.ok();
+    }
 }

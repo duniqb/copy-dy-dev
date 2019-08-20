@@ -23,6 +23,7 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
      */
     @Bean
     public Interceptor interceptor() {
+
         return new Interceptor();
     }
 

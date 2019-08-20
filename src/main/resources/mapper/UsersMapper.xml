@@ -1,12 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.duniqb.copydy.dao.UsersMapper">
-  <resultMap id="BaseResultMap" type="cn.duniqb.copydy.model.Users">
-    <!--
-      WARNING - @mbg.generated
-    -->
-    <result column="USER" jdbcType="CHAR" property="user" />
-    <result column="CURRENT_CONNECTIONS" jdbcType="BIGINT" property="currentConnections" />
-    <result column="TOTAL_CONNECTIONS" jdbcType="BIGINT" property="totalConnections" />
-  </resultMap>
+    <resultMap id="BaseResultMap" type="cn.duniqb.copydy.model.Users">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <result column="USER" jdbcType="CHAR" property="user"/>
+        <result column="CURRENT_CONNECTIONS" jdbcType="BIGINT" property="currentConnections"/>
+        <result column="TOTAL_CONNECTIONS" jdbcType="BIGINT" property="totalConnections"/>
+    </resultMap>
+
+    <update id="addReceiveLikeCount" parameterType="String">
+        update users
+        set receive_like_counts = receive_like_counts + 1
+        where id = #{userId}
+    </update>
+
+    <update id="reduceReceiveLikeCount" parameterType="String">
+        update users
+        set receive_like_counts = receive_like_counts + 1
+        where id = #{userId}
+    </update>
 </mapper>

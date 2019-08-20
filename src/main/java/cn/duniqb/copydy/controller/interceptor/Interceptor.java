@@ -38,11 +38,12 @@ public class Interceptor implements HandlerInterceptor {
                     return false;
                 }
             }
-        } else {
-            System.out.println("请登录...");
-            returnErrorResponse(response, new JSONResult().errorTokenMsg("请登录"));
-            return false;
         }
+//        } else {
+//            System.out.println("请登录...。");
+//            returnErrorResponse(response, new JSONResult().errorTokenMsg("请登录"));
+//            return false;
+//        }
         return true;
     }
 

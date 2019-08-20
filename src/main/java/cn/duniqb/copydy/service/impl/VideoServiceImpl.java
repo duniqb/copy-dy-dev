@@ -2,10 +2,9 @@ package cn.duniqb.copydy.service.impl;
 
 
 import cn.duniqb.copydy.common.utils.PageResult;
-import cn.duniqb.copydy.dao.SearchRecordsMapper;
-import cn.duniqb.copydy.dao.VideosMapper;
-import cn.duniqb.copydy.dao.VideosMapperCustom;
+import cn.duniqb.copydy.dao.*;
 import cn.duniqb.copydy.model.SearchRecords;
+import cn.duniqb.copydy.model.UsersLikeVideos;
 import cn.duniqb.copydy.model.Videos;
 import cn.duniqb.copydy.model.vo.VideosVO;
 import cn.duniqb.copydy.service.VideoService;
@@ -16,6 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import tk.mybatis.mapper.entity.Example;
+import tk.mybatis.mapper.entity.Example.Criteria;
 
 import java.util.List;
 
@@ -30,6 +32,12 @@ public class VideoServiceImpl implements VideoService {
 
     @Autowired
     private SearchRecordsMapper searchRecordsMapper;
+
+    @Autowired
+    private UsersLikeVideosMapper usersLikeVideosMapper;
+
+    @Autowired
+    private UsersMapper usersMapper;
 
     @Autowired
     private Sid sid;
@@ -113,5 +121,61 @@ public class VideoServiceImpl implements VideoService {
     public List<String> getHotWords() {
 
         return searchRecordsMapper.getHotWords();
+    }
+
+    /**
+     * 用户喜欢视频：需要改动 3 个表
+     *
+     * @param userId
+     * @param videoId
+     * @param videoCreaterId
+     */
+    @Transactional(propagation = Propagation.REQUIRED)
+    @Override
+    @SuppressWarnings("all")
+    public void userLikeVideo(String userId, String videoId, String videoCreaterId) {
+        System.out.println("用户喜欢视频..");
+        // 保存用户和视频的点赞关联关系表
+        String likeId = sid.nextShort();
+        UsersLikeVideos ulv = new UsersLikeVideos();
+        ulv.setId(likeId);
+        ulv.setUserId(userId);
+        ulv.setVideoId(videoId);
+        usersLikeVideosMapper.insert(ulv);
+
+        // 视频喜欢数量累加
+        videosMapperCustom.addVideoLikeCount(videoId);
+
+        // 用户受喜欢数量累加
+        usersMapper.addReceiveLikeCount(userId);
+    }
+
+    /**
+     * 用户不喜欢视频
+     *
+     * @param userId
+     * @param videoId
+     * @param videoCreaterId
+     */
+    @SuppressWarnings("all")
+    @Transactional(propagation = Propagation.REQUIRED)
+    @Override
+    public void userUnLikeVideo(String userId, String videoId, String videoCreaterId) {
+        System.out.println("用户不喜欢视频..");
+
+        // 删除用户和视频的点赞关联关系表
+        Example example = new Example(UsersLikeVideos.class);
+        Criteria criteria = example.createCriteria();
+
+        criteria.andEqualTo("userId", userId);
+        criteria.andEqualTo("videoId", videoId);
+
+        usersLikeVideosMapper.deleteByExample(example);
+
+        // 视频喜欢数量累减
+        videosMapperCustom.reduceVideoLikeCount(videoId);
+
+        // 用户受喜欢数量累减
+        usersMapper.reduceReceiveLikeCount(userId);
     }
 }

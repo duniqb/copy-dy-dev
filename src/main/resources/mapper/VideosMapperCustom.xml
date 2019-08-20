@@ -35,4 +35,18 @@
         and v.status = 1
         order by v.create_time desc
     </select>
+
+    <!--对喜欢视频进行累加-->
+    <update id="addVideoLikeCount" parameterType="String">
+        update videos
+        set like_counts = like_counts + 1
+        where id = #{videoId}
+    </update>
+
+    <!--对喜欢视频进行累减-->
+    <update id="reduceVideoLikeCount" parameterType="String">
+        update videos
+        set like_counts = like_counts - 1
+        where id = #{videoId}
+    </update>
 </mapper>
