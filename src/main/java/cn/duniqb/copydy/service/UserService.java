@@ -2,6 +2,7 @@ package cn.duniqb.copydy.service;
 
 
 import cn.duniqb.copydy.model.Users;
+import cn.duniqb.copydy.model.UsersReport;
 import org.springframework.stereotype.Service;
 
 
@@ -74,4 +75,11 @@ public interface UserService {
      * @param fanId
      */
     boolean queryIsFollow(String userId, String fanId);
+
+    /**
+     * 举报用户
+     *
+     * @param userReport
+     */
+    void reportUser(UsersReport userReport);
 }

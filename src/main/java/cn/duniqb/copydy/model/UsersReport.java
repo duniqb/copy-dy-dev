@@ -23,7 +23,7 @@ public class UsersReport {
     private String title;
 
     /**
-     * 内容
+     * 内容：用户自定义
      */
     private String content;
 

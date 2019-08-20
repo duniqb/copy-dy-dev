@@ -5,9 +5,11 @@ import cn.duniqb.copydy.common.utils.JSONResult;
 import cn.duniqb.copydy.dao.UsersFansMapper;
 import cn.duniqb.copydy.dao.UsersLikeVideosMapper;
 import cn.duniqb.copydy.dao.UsersMapper;
+import cn.duniqb.copydy.dao.UsersReportMapper;
 import cn.duniqb.copydy.model.Users;
 import cn.duniqb.copydy.model.UsersFans;
 import cn.duniqb.copydy.model.UsersLikeVideos;
+import cn.duniqb.copydy.model.UsersReport;
 import cn.duniqb.copydy.service.UserService;
 import org.apache.commons.lang3.StringUtils;
 import org.n3r.idworker.Sid;
@@ -18,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 import tk.mybatis.mapper.entity.Example.Criteria;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -31,6 +34,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UsersFansMapper usersFansMapper;
+
+    @Autowired
+    private UsersReportMapper usersReportMapper;
 
     @Autowired
     private Sid sid;
@@ -216,4 +222,25 @@ public class UserServiceImpl implements UserService {
 
         return false;
     }
+
+    /**
+     * 举报用户
+     *
+     * @param userReport
+     */
+    @Transactional(propagation = Propagation.REQUIRED)
+    @Override
+    public void reportUser(UsersReport userReport) {
+
+        String urId = sid.nextShort();
+        userReport.setId(urId);
+        userReport.setCreateDate(new Date());
+
+        System.out.println("impl:");
+        System.out.println(userReport.getTitle());
+        System.out.println(userReport.getContent());
+
+        usersReportMapper.insert(userReport);
+    }
+
 }
