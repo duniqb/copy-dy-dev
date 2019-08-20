@@ -2,9 +2,11 @@ package cn.duniqb.copydy.service.impl;
 
 
 import cn.duniqb.copydy.common.utils.JSONResult;
+import cn.duniqb.copydy.dao.UsersFansMapper;
 import cn.duniqb.copydy.dao.UsersLikeVideosMapper;
 import cn.duniqb.copydy.dao.UsersMapper;
 import cn.duniqb.copydy.model.Users;
+import cn.duniqb.copydy.model.UsersFans;
 import cn.duniqb.copydy.model.UsersLikeVideos;
 import cn.duniqb.copydy.service.UserService;
 import org.apache.commons.lang3.StringUtils;
@@ -26,6 +28,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UsersMapper usersMapper;
+
+    @Autowired
+    private UsersFansMapper usersFansMapper;
 
     @Autowired
     private Sid sid;
@@ -120,6 +125,7 @@ public class UserServiceImpl implements UserService {
      */
     @Transactional(propagation = Propagation.SUPPORTS)
     @Override
+    @SuppressWarnings("all")
     public boolean isUserLikeVideo(String userId, String videoId) {
 
         if (StringUtils.isBlank(userId) || StringUtils.isBlank(videoId)) {
@@ -137,6 +143,77 @@ public class UserServiceImpl implements UserService {
         if (list != null && list.size() > 0) {
             return true;
         }
+        return false;
+    }
+
+    /**
+     * 增加用户和粉丝的关系
+     *
+     * @param userId
+     * @param fanId
+     */
+    @Transactional(propagation = Propagation.REQUIRED)
+    @Override
+    @SuppressWarnings("all")
+    public void saveUserFanRelation(String userId, String fanId) {
+
+        String relId = sid.nextShort();
+
+        UsersFans usersFan = new UsersFans();
+        usersFan.setId(relId);
+        usersFan.setUserId(userId);
+        usersFan.setFanId(fanId);
+
+        // 插入关注表
+        usersFansMapper.insert(usersFan);
+
+        // 更新粉丝和关注者数量
+        usersMapper.addFansCount(userId);
+        usersMapper.addFollowerCount(fanId);
+
+    }
+
+    /**
+     * 删除用户和粉丝的关系
+     *
+     * @param userId
+     * @param fanId
+     */
+    @Transactional(propagation = Propagation.REQUIRED)
+    @Override
+    @SuppressWarnings("all")
+    public void deleteUserFanRelation(String userId, String fanId) {
+        Example example = new Example(UsersFans.class);
+        Criteria criteria = example.createCriteria();
+
+        criteria.andEqualTo("userId", userId);
+        criteria.andEqualTo("fanId", fanId);
+
+        usersFansMapper.deleteByExample(example);
+
+        usersMapper.reduceFansCount(userId);
+        usersMapper.reduceFollowerCount(fanId);
+    }
+
+    /**
+     * 是否已经关注
+     *
+     * @param userId
+     * @param fanId
+     * @return
+     */
+    @Override
+    public boolean queryIsFollow(String userId, String fanId) {
+        Example example = new Example(UsersFans.class);
+        Criteria criteria = example.createCriteria();
+
+        criteria.andEqualTo("userId", userId);
+        criteria.andEqualTo("fanId", fanId);
+        List<UsersFans> fans = usersFansMapper.selectByExample(example);
+        if (fans != null && !fans.isEmpty()) {
+            return true;
+        }
+
         return false;
     }
 }

@@ -86,6 +86,7 @@ public class VideoServiceImpl implements VideoService {
 
         // 保存热搜词记录
         String desc = video.getVideoDesc();
+        String userId = video.getUserId();
         if (isSaveRecord != null && isSaveRecord == 1) {
             SearchRecords record = new SearchRecords();
             String recordId = sid.nextShort();
@@ -96,7 +97,7 @@ public class VideoServiceImpl implements VideoService {
 
         // 开始分页
         PageHelper.startPage(page, pageSize);
-        List<VideosVO> list = videosMapperCustom.queryAllVideos(desc);
+        List<VideosVO> list = videosMapperCustom.queryAllVideos(desc, userId);
 
         // 包装Page对象
         PageInfo<VideosVO> pageList = new PageInfo<>(list);
@@ -134,7 +135,6 @@ public class VideoServiceImpl implements VideoService {
     @Override
     @SuppressWarnings("all")
     public void userLikeVideo(String userId, String videoId, String videoCreaterId) {
-        System.out.println("用户喜欢视频..");
         // 保存用户和视频的点赞关联关系表
         String likeId = sid.nextShort();
         UsersLikeVideos ulv = new UsersLikeVideos();
@@ -161,8 +161,6 @@ public class VideoServiceImpl implements VideoService {
     @Transactional(propagation = Propagation.REQUIRED)
     @Override
     public void userUnLikeVideo(String userId, String videoId, String videoCreaterId) {
-        System.out.println("用户不喜欢视频..");
-
         // 删除用户和视频的点赞关联关系表
         Example example = new Example(UsersLikeVideos.class);
         Criteria criteria = example.createCriteria();
@@ -178,4 +176,55 @@ public class VideoServiceImpl implements VideoService {
         // 用户受喜欢数量累减
         usersMapper.reduceReceiveLikeCount(userId);
     }
+
+    /**
+     * 查询我点赞的视频
+     *
+     * @param userId
+     * @param page
+     * @param pageSize
+     * @return
+     */
+    @Transactional(propagation = Propagation.SUPPORTS)
+    @Override
+    public PageResult queryMyLikeVideos(String userId, Integer page, Integer pageSize) {
+        PageHelper.startPage(page, pageSize);
+        List<VideosVO> list = videosMapperCustom.queryMyLikeVideos(userId);
+
+        PageInfo<VideosVO> pageList = new PageInfo<>(list);
+
+        PageResult pagedResult = new PageResult();
+        pagedResult.setTotal(pageList.getPages());
+        pagedResult.setRows(list);
+        pagedResult.setPage(page);
+        pagedResult.setRecords(pageList.getTotal());
+
+        return pagedResult;
+    }
+
+    /**
+     * 查询我关注的人发的视频
+     *
+     * @param userId
+     * @param page
+     * @param pageSize
+     * @return
+     */
+    @Transactional(propagation = Propagation.SUPPORTS)
+    @Override
+    public PageResult queryMyFollowVideos(String userId, Integer page, Integer pageSize) {
+        PageHelper.startPage(page, pageSize);
+        List<VideosVO> list = videosMapperCustom.queryMyFollowVideos(userId);
+
+        PageInfo<VideosVO> pageList = new PageInfo<>(list);
+
+        PageResult pagedResult = new PageResult();
+        pagedResult.setTotal(pageList.getPages());
+        pagedResult.setRows(list);
+        pagedResult.setPage(page);
+        pagedResult.setRecords(pageList.getTotal());
+
+        return pagedResult;
+    }
+
 }

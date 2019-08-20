@@ -118,7 +118,7 @@ public class UserController extends BasicController {
     @ApiImplicitParam(name = "userId", value = "用户id", required = true,
             dataType = "String", paramType = "query")
     @PostMapping("/query")
-    public JSONResult query(String userId) {
+    public JSONResult query(String userId, String fanId) {
         if (StringUtils.isBlank(userId)) {
             return JSONResult.errorMsg("用户 ID 不能为空");
         }
@@ -126,6 +126,9 @@ public class UserController extends BasicController {
         Users userInfo = userService.queryUserInfo(userId);
         UsersVO userVO = new UsersVO();
         BeanUtils.copyProperties(userInfo, userVO);
+
+        // 是否已经关注
+        userVO.setFollow(userService.queryIsFollow(userId, fanId));
 
         return JSONResult.ok(userVO);
     }
@@ -156,4 +159,43 @@ public class UserController extends BasicController {
 
         return JSONResult.ok(publisherVideo);
     }
+
+    /**
+     * 关注
+     *
+     * @param userId
+     * @param fanId
+     * @return
+     */
+    @PostMapping("/beYourFans")
+    public JSONResult beYourFans(String userId, String fanId) {
+        if (StringUtils.isBlank(userId) || StringUtils.isBlank(fanId)) {
+            return JSONResult.errorMsg("");
+        }
+
+        userService.saveUserFanRelation(userId, fanId);
+
+        return JSONResult.ok("关注成功");
+    }
+
+    /**
+     * 取消关注
+     *
+     * @param userId
+     * @param fanId
+     * @return
+     */
+    @PostMapping("/dontBeYourFans")
+    public JSONResult dontBeYourFans(String userId, String fanId) {
+        if (StringUtils.isBlank(userId) || StringUtils.isBlank(fanId)) {
+            return JSONResult.errorMsg("");
+        }
+
+        System.out.println(userId.toString());
+        System.out.println(fanId.toString());
+        userService.deleteUserFanRelation(userId, fanId);
+
+        return JSONResult.ok("取消关注成功");
+    }
+
 }

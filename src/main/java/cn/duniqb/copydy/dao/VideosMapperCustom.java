@@ -16,11 +16,30 @@ import java.util.List;
 @Component
 public interface VideosMapperCustom extends MyMapper<Videos> {
     /**
-     * 查询所有视频
+     * 条件查询所有视频
      *
+     * @param videoDesc
+     * @param userId
      * @return
      */
-    List<VideosVO> queryAllVideos(@Param("videoDesc") String videoDesc);
+    List<VideosVO> queryAllVideos(@Param("videoDesc") String videoDesc, @Param("userId") String userId);
+
+    /**
+     * 查询我关注的人发的视频
+     *
+     * @param userId
+     * @return
+     */
+    List<VideosVO> queryMyFollowVideos(String userId);
+
+    /**
+     * 查询点赞视频
+     *
+     * @param userId
+     * @return
+     */
+    List<VideosVO> queryMyLikeVideos(@Param("userId") String userId);
+
 
     /**
      * 对喜欢的数量累加

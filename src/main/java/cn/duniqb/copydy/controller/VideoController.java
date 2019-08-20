@@ -272,6 +272,53 @@ public class VideoController extends BasicController {
     }
 
     /**
+     * 我收藏(点赞)过的视频列表
+     */
+    @PostMapping("/showMyLike")
+    public JSONResult showMyLike(String userId, Integer page, Integer pageSize) {
+        if (StringUtils.isBlank(userId)) {
+            return JSONResult.ok();
+        }
+
+        if (page == null) {
+            page = 1;
+        }
+
+        if (pageSize == null) {
+            pageSize = 6;
+        }
+
+        PageResult videosList = videoService.queryMyLikeVideos(userId, page, pageSize);
+
+        return JSONResult.ok(videosList);
+    }
+
+    /**
+     * 我关注的人发的视频
+     *
+     * @param userId
+     * @param page
+     * @return
+     */
+    @PostMapping("/showMyFollow")
+    public JSONResult showMyFollow(String userId, Integer page) {
+
+        if (StringUtils.isBlank(userId)) {
+            return JSONResult.ok();
+        }
+
+        if (page == null) {
+            page = 1;
+        }
+
+        int pageSize = 6;
+
+        PageResult videosList = videoService.queryMyFollowVideos(userId, page, pageSize);
+
+        return JSONResult.ok(videosList);
+    }
+
+    /**
      * 热搜记录
      *
      * @return

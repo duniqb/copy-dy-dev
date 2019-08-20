@@ -56,7 +56,7 @@ public class RegistLoginController extends BasicController {
             user.setFollowCounts(0);
             userService.saveUser(user);
         } else {
-            return JSONResult.errorMsg("用户名已经存在，请换一个再试");
+            return JSONResult.errorMsg("用户名已存在");
         }
         // 注册成功后返回给前端用户对象，但把密码去敏
         user.setPassword("");
