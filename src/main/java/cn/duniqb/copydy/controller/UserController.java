@@ -3,6 +3,7 @@ package cn.duniqb.copydy.controller;
 
 import cn.duniqb.copydy.common.utils.JSONResult;
 import cn.duniqb.copydy.model.Users;
+import cn.duniqb.copydy.model.vo.PublisherVideo;
 import cn.duniqb.copydy.model.vo.UsersVO;
 import cn.duniqb.copydy.service.UserService;
 import io.swagger.annotations.Api;
@@ -127,5 +128,32 @@ public class UserController extends BasicController {
         BeanUtils.copyProperties(userInfo, userVO);
 
         return JSONResult.ok(userVO);
+    }
+
+    /**
+     * 查询视频发布者
+     *
+     * @param
+     * @return
+     */
+    @PostMapping("/queryPublisher")
+    public JSONResult queryPublisher(String loginUserId, String videoId, String publishUserId) {
+        if (StringUtils.isBlank(publishUserId)) {
+            return JSONResult.errorMsg("");
+        }
+
+        // 查询视频发布者的信息
+        Users userInfo = userService.queryUserInfo(publishUserId);
+        UsersVO publisher = new UsersVO();
+        BeanUtils.copyProperties(userInfo, publisher);
+
+        // 查询当前关注者和发布者的关系
+        boolean userLikeVideo = userService.isUserLikeVideo(loginUserId, videoId);
+
+        PublisherVideo publisherVideo = new PublisherVideo();
+        publisherVideo.setPublisher(publisher);
+        publisherVideo.setUserLikeVideo(userLikeVideo);
+
+        return JSONResult.ok(publisherVideo);
     }
 }
